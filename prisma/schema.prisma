@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id String @id @default(cuid())
+  email String @unique
+  passwordHash String
+  role String @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auditLogs AuditLog[]
+}
+model Portfolio {
+  id String @id @default("main")
+  content Json
+  updatedAt DateTime @updatedAt
+}
+model ContactMessage {
+  id String @id @default(cuid())
+  name String
+  email String
+  message String
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
+model AuditLog {
+  id String @id @default(cuid())
+  actorId String
+  action String
+  detail String
+  createdAt DateTime @default(now())
+  actor AdminUser @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  @@index([createdAt])
+}
